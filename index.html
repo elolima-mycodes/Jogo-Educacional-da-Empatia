@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Caminho da Empatia</title>
+    <style>
+        /* Variáveis de Cores */
+        :root {
+            --cinza: #A0AEC0;
+            --coral: #FF6B6B;
+            --turquesa: #4ECDC4;
+            --amarelo-sol: #FFE66D;
+            --off-white: #F0F4F8;
+            --text-dark: #2D3748;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--off-white);
+            color: var(--text-dark);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Top Bar & Progresso */
+        .header {
+            width: 100%;
+            padding: 20px;
+            background: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header h1 {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+        }
+
+        .progress-container {
+            width: 80%;
+            max-width: 500px;
+            height: 20px;
+            background-color: var(--off-white);
+            border-radius: 10px;
+            margin: 0 auto;
+            overflow: hidden;
+            border: 2px solid #ddd;
+        }
+
+        #progress-bar {
+            width: 0%;
+            height: 100%;
+            background-color: var(--coral);
+            transition: width 0.5s ease;
+        }
+
+        /* Palco Principal */
+        #game-container {
+            flex: 1;
+            width: 100%;
+            max-width: 800px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .scene {
+            width: 100%;
+            height: 450px;
+            border-radius: 20px;
+            position: relative;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            overflow: hidden;
+            border: 8px solid white;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            background-size: cover;
+            background-position: center;
+            transition: background-image 0.5s ease;
+        }
+
+        /* Personagem */
+        .character-wrapper {
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            position: relative;
+            bottom: 10px;
+            max-width: 80%;
+        }
+
+        .character-wrapper:hover {
+            transform: scale(1.03);
+        }
+
+        .npc-image {
+            max-height: 350px;
+            width: auto;
+            display: block;
+            transition: filter 0.5s ease;
+        }
+
+        /* O filtro de cinza só é aplicado na versão triste via CSS */
+        .sad-filter {
+            filter: grayscale(100%);
+        }
+
+        .happy-filter {
+            filter: grayscale(0%);
+        }
+
+        /* Navegação de Salas */
+        .nav-menu {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+            padding: 10px;
+        }
+
+        .nav-btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 30px;
+            background-color: white;
+            color: var(--text-dark);
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #cbd5e0;
+            transition: all 0.2s;
+        }
+
+        .nav-btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 #cbd5e0;
+        }
+
+        .nav-btn.active {
+            background-color: var(--turquesa);
+            color: white;
+            box-shadow: 0 4px 0 #3ba8a1;
+        }
+
+        /* Modal / Caixa de Diálogo */
+        #modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        .modal {
+            background: white;
+            padding: 30px;
+            border-radius: 25px;
+            max-width: 550px;
+            width: 100%;
+            text-align: center;
+            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes popIn {
+            from {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .modal h2 {
+            margin-bottom: 15px;
+            color: var(--coral);
+        }
+
+        .choice-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .choice-btn {
+            padding: 15px;
+            border: 2px solid var(--turquesa);
+            border-radius: 15px;
+            background: var(--off-white);
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.2s;
+            color: var(--text-dark);
+            text-align: center;
+        }
+
+        .choice-btn:hover {
+            background: #e6fffa;
+        }
+
+        #feedback-msg {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            display: none;
+            font-weight: bold;
+        }
+
+        .error {
+            background-color: #fed7d7;
+            color: #c53030;
+        }
+
+        .success {
+            background-color: #c6f6d5;
+            color: #2f855a;
+        }
+
+        @media (max-width: 600px) {
+            .scene {
+                height: 350px;
+            }
+
+            .npc-image {
+                max-height: 250px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header">
+        <h1>Nível de Empatia da Escola</h1>
+        <div class="progress-container">
+            <div id="progress-bar"></div>
+        </div>
+        <p style="margin-top: 5px; font-size: 0.9rem;">Empatia: <span id="points">0</span>/4</p>
+    </div>
+
+    <div id="game-container">
+        <h2 id="location-name" style="margin-bottom: 15px; color: var(--cinza);">Carregando...</h2>
+
+        <div id="main-scene" class="scene">
+            <div id="npc-trigger" class="character-wrapper">
+                <!-- Imagem do NPC que muda via JavaScript -->
+                <img id="npc-img" src="" alt="NPC" class="npc-image">
+            </div>
+        </div>
+
+        <div class="nav-menu">
+            <button class="nav-btn active" onclick="changeLocation('patio')">Pátio</button>
+            <button class="nav-btn" onclick="changeLocation('cantina')">Cantina</button>
+            <button class="nav-btn" onclick="changeLocation('biblioteca')">Biblioteca</button>
+            <button class="nav-btn" onclick="changeLocation('secretaria')">Secretaria</button>
+        </div>
+    </div>
+
+    <div id="modal-overlay">
+        <div class="modal">
+            <h2 id="npc-name">Personagem</h2>
+            <p id="npc-problem">Problema...</p>
+            <div class="choice-container">
+                <button id="btn-empatico" class="choice-btn">Opção Empática</button>
+                <button id="btn-indiferente" class="choice-btn">Opção Indiferente</button>
+            </div>
+            <div id="feedback-msg"></div>
+            <button id="btn-close"
+                style="margin-top: 20px; display: none; padding: 12px 25px; border-radius: 25px; border: none; background: var(--turquesa); color: white; cursor: pointer; font-weight: bold;">Continuar</button>
+        </div>
+    </div>
+
+    <script>
+        /**
+         * GUIA DE SUBSTITUIÇÃO DE IMAGENS:
+         * Substitua os links abaixo (ex: 'url-da-imagem.png') pelos seus links reais.
+         */
+        const gameData = {
+            patio: {
+                name: "Sr. Jorge (Limpeza)",
+                location: "Pátio da Escola",
+                // CENÁRIO:
+                bg: "imgs/patio.png",
+                // PERSONAGENS:
+                imgTriste: "imgs/npc1-sr-jorge-comeco.png",
+                imgFeliz: "imgs/npc1-sr-jorge-final.png",
+                problem: "Olá... às vezes sinto que sou invisível aqui. Passo o dia limpando e parece que ninguém nota o meu esforço para manter a escola agradável.",
+                empatico: "Dar um sorriso e dizer: 'Obrigado pelo seu trabalho, Sr. Jorge! A escola está ótima graças ao senhor'.",
+                indiferente: "Apenas passar direto, afinal, limpar a escola é a obrigação dele.",
+                hint: "Dica: Reconhecer o trabalho dos outros é o primeiro passo para a visibilidade social.",
+                consequence: "Obrigado por me notar! Sinto-me muito mais motivado agora para deixar tudo brilhando."
+            },
+            cantina: {
+                name: "Pedro (Colega)",
+                location: "Cantina",
+                // CENÁRIO:
+                bg: "imgs/cantina.png",
+                // PERSONAGENS:
+                imgTriste: "imgs/npc2-pedro-comeco.png",
+                imgFeliz: "imgs/npc2-pedro-final.png",
+                problem: "Ah, não... meu lanche caiu todo no chão! Agora vou ter que ficar com fome até o final das aulas...",
+                empatico: "Sentar-se ao lado dele e dizer: 'Ei, não fica assim! Eu tenho comida sobrando, quer dividir comigo?'",
+                indiferente: "Dizer: 'Puxa, que azar! Da próxima vez segura o prato com mais cuidado'.",
+                hint: "Dica: Empatia é se colocar no lugar do outro e oferecer apoio em momentos de perda.",
+                consequence: "Valeu mesmo por dividir seu lanche! Você salvou o meu dia!"
+            },
+            biblioteca: {
+                name: "Léo (Inclusão)",
+                location: "Biblioteca",
+                // CENÁRIO:
+                bg: "imgs/biblioteca.png",
+                // PERSONAGENS:
+                imgTriste: "imgs/npc3-leo-comeco.png",
+                imgFeliz: "imgs/npc3-leo-final.png",
+                problem: "É difícil... as pessoas ou me ignoram ou me olham com cara de pena. Eu só queria conversar normalmente sobre coisas que eu gosto.",
+                empatico: "Chegar perto com naturalidade e perguntar: 'Oi Léo! Tem algum livro bom para me recomendar?'",
+                indiferente: "Ficar apontando de longe e comentar com um amigo: 'Nossa, deve ser tão difícil a vida dele'.",
+                hint: "Dica: Trate as pessoas com naturalidade. O interesse genuíno aproxima mais do que a pena.",
+                consequence: "Foi muito legal conversar com você! Podemos conversar mais sobre livros depois."
+            },
+            secretaria: {
+                name: "Sr. Arnaldo (Secretário)",
+                location: "Secretaria",
+                // CENÁRIO:
+                bg: "imgs/secretaria.png",
+                // PERSONAGENS:
+                imgTriste: "imgs/npc4-arnaldo-comeco.png",
+                imgFeliz: "imgs/npc4-arnaldo-final.png",
+                problem: "Telefone tocando, pilhas de documentos... as pessoas entram aqui, exigem papéis e nem olham na minha cara. Sinto que sou apenas uma máquina.",
+                empatico: "Esperar pacientemente ele desligar o telefone, dar um 'Bom dia' gentil e perguntar se ele precisa de ajuda.",
+                indiferente: "Bater no balcão enquanto ele fala ao telefone para mostrar que você está com pressa.",
+                hint: "Dica: Gentileza e paciência humanizam os ambientes de trabalho sob pressão.",
+                consequence: "Obrigado pela paciência e pelo 'bom dia'. Faz toda a diferença ser tratado com respeito no meio da correria."
+            }
+        };
+
+        let currentLoc = 'patio';
+        let solved = { patio: false, cantina: false, biblioteca: false, secretaria: false };
+        let points = 0;
+
+        const mainScene = document.getElementById('main-scene');
+        const npcImg = document.getElementById('npc-img');
+        const modal = document.getElementById('modal-overlay');
+        const progressBar = document.getElementById('progress-bar');
+        const pointsDisplay = document.getElementById('points');
+        const feedbackMsg = document.getElementById('feedback-msg');
+        const btnClose = document.getElementById('btn-close');
+
+        function changeLocation(loc) {
+            currentLoc = loc;
+            const data = gameData[loc];
+
+            // Atualiza Título e Cenário
+            document.getElementById('location-name').innerText = data.location;
+            mainScene.style.backgroundImage = `url('${data.bg}')`;
+
+            // Atualiza Botões
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.innerText.toLowerCase() === loc);
+            });
+
+            updateNPC();
+        }
+
+        function updateNPC() {
+            const data = gameData[currentLoc];
+            const isSolved = solved[currentLoc];
+
+            if (isSolved) {
+                npcImg.src = data.imgFeliz;
+                npcImg.className = "npc-image happy-filter";
+            } else {
+                npcImg.src = data.imgTriste;
+                npcImg.className = "npc-image sad-filter";
+            }
+        }
+
+        document.getElementById('npc-trigger').onclick = () => {
+            const data = gameData[currentLoc];
+            document.getElementById('npc-name').innerText = data.name;
+
+            feedbackMsg.style.display = 'none';
+
+            if (solved[currentLoc]) {
+                document.getElementById('npc-problem').innerText = data.consequence;
+                document.querySelector('.choice-container').style.display = 'none';
+                btnClose.style.display = 'inline-block';
+            } else {
+                document.getElementById('npc-problem').innerText = data.problem;
+                document.getElementById('btn-empatico').innerText = data.empatico;
+                document.getElementById('btn-indiferente').innerText = data.indiferente;
+                document.querySelector('.choice-container').style.display = 'flex';
+                btnClose.style.display = 'none';
+            }
+
+            modal.style.display = 'flex';
+        };
+
+        document.getElementById('btn-empatico').onclick = () => {
+            solved[currentLoc] = true;
+            points++;
+
+            pointsDisplay.innerText = points;
+            progressBar.style.width = (points / 4) * 100 + "%";
+
+            document.getElementById('npc-problem').innerText = gameData[currentLoc].consequence;
+            feedbackMsg.innerText = "Excelente! Sua empatia trouxe cor e alegria!";
+            feedbackMsg.className = "success";
+            feedbackMsg.style.display = 'block';
+
+            document.querySelector('.choice-container').style.display = 'none';
+            btnClose.style.display = 'inline-block';
+
+            updateNPC();
+
+            if (points === 4) {
+                setTimeout(() => {
+                    alert("Incrível! Você completou sua missão e transformou toda a escola!");
+                }, 500);
+            }
+        };
+
+        document.getElementById('btn-indiferente').onclick = () => {
+            feedbackMsg.innerText = gameData[currentLoc].hint;
+            feedbackMsg.className = "error";
+            feedbackMsg.style.display = 'block';
+        };
+
+        btnClose.onclick = () => modal.style.display = 'none';
+
+        window.onload = () => changeLocation('patio');
+
+    </script>
+</body>
+
+</html>
