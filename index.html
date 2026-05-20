@@ -38,7 +38,10 @@
             width: 100%;
             padding: 20px;
             background: white;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 4px 15px rgba(160, 174, 192, 0.15);
+            /* Soft shadow with slate grey */
+            border-bottom: 3px solid var(--off-white);
+            /* Bottom border using off-white */
             text-align: center;
             position: sticky;
             top: 0;
@@ -46,8 +49,15 @@
         }
 
         .header h1 {
-            font-size: 1.2rem;
+            font-size: 1.3rem;
             margin-bottom: 10px;
+            color: var(--text-dark);
+        }
+
+        #points {
+            color: var(--coral);
+            font-weight: bold;
+            font-size: 1.05rem;
         }
 
         .progress-container {
@@ -58,7 +68,8 @@
             border-radius: 10px;
             margin: 0 auto;
             overflow: hidden;
-            border: 2px solid #ddd;
+            border: 2px solid var(--cinza);
+            /* Using slate grey for the container border */
         }
 
         #progress-bar {
@@ -100,13 +111,17 @@
         .character-wrapper {
             cursor: pointer;
             transition: transform 0.3s ease;
-            position: relative;
+            position: absolute;
             bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
             max-width: 80%;
+            display: flex;
+            justify-content: center;
         }
 
         .character-wrapper:hover {
-            transform: scale(1.03);
+            transform: translateX(-50%) scale(1.03);
         }
 
         .npc-image {
@@ -143,29 +158,35 @@
             color: var(--text-dark);
             font-weight: bold;
             cursor: pointer;
-            box-shadow: 0 4px 0 #cbd5e0;
+            box-shadow: 0 4px 0 var(--cinza);
+            /* Using slate grey instead of hardcoded hex */
             transition: all 0.2s;
         }
 
         .nav-btn:active {
             transform: translateY(2px);
-            box-shadow: 0 2px 0 #cbd5e0;
+            box-shadow: 0 2px 0 var(--cinza);
+            /* Using slate grey instead of hardcoded hex */
         }
 
         .nav-btn.active {
             background-color: var(--turquesa);
             color: white;
-            box-shadow: 0 4px 0 #3ba8a1;
+            box-shadow: 0 4px 0 #3baba2;
+            /* Darker turquoise matching the official palette */
         }
 
         /* Modal / Caixa de Diálogo */
-        #modal-overlay {
+        #modal-overlay,
+        #final-modal-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.6);
+            background: rgba(45, 55, 72, 0.65);
+            /* Using slate grey / text dark for overlay */
+            backdrop-filter: blur(4px);
             display: none;
             justify-content: center;
             align-items: center;
@@ -175,12 +196,15 @@
 
         .modal {
             background: white;
-            padding: 30px;
+            padding: 35px;
             border-radius: 25px;
+            border: 4px solid var(--off-white);
+            /* Premium border using off-white */
             max-width: 550px;
             width: 100%;
             text-align: center;
-            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 15px 30px rgba(45, 55, 72, 0.2);
+            animation: popIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
         @keyframes popIn {
@@ -209,7 +233,6 @@
 
         .choice-btn {
             padding: 15px;
-            border: 2px solid var(--turquesa);
             border-radius: 15px;
             background: var(--off-white);
             cursor: pointer;
@@ -217,28 +240,87 @@
             transition: all 0.2s;
             color: var(--text-dark);
             text-align: center;
+            font-weight: 600;
         }
 
-        .choice-btn:hover {
-            background: #e6fffa;
+        #btn-empatico {
+            border: 2px solid var(--turquesa); /* Uses --turquesa for positive/empathetic choice */
+        }
+
+        #btn-empatico:hover {
+            background: rgba(78, 205, 196, 0.12); /* Opacity of official --turquesa */
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(78, 205, 196, 0.15);
+        }
+
+        #btn-indiferente {
+            border: 2px solid var(--cinza); /* Uses --cinza for secondary/indifferent choice */
+            color: #5a6474;
+        }
+
+        #btn-indiferente:hover {
+            background: rgba(160, 174, 192, 0.12); /* Opacity of official --cinza */
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(160, 174, 192, 0.15);
+        }
+
+        #btn-restart:hover {
+            background: rgba(255, 107, 107, 0.12) !important;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(255, 107, 107, 0.15);
         }
 
         #feedback-msg {
             margin-top: 20px;
             padding: 15px;
-            border-radius: 10px;
+            border-radius: 12px;
             display: none;
             font-weight: bold;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .error {
-            background-color: #fed7d7;
-            color: #c53030;
+            background-color: rgba(255, 230, 109, 0.22); /* Official --amarelo-sol with opacity for teaching hints */
+            color: #7d6608;
+            border: 2px solid var(--amarelo-sol);
         }
 
         .success {
-            background-color: #c6f6d5;
-            color: #2f855a;
+            background-color: rgba(78, 205, 196, 0.12); /* Official --turquesa with opacity */
+            color: #2d736e;
+            border: 2px solid var(--turquesa);
+        }
+
+        #btn-close {
+            margin-top: 20px;
+            display: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            border: none;
+            background-color: var(--turquesa);
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 4px 0 #3baba2;
+            /* Darker turquoise matching the official palette */
+            transition: all 0.2s;
+        }
+
+        #btn-close:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 #3baba2;
         }
 
         @media (max-width: 600px) {
@@ -248,6 +330,34 @@
 
             .npc-image {
                 max-height: 250px;
+            }
+
+            .nav-menu {
+                gap: 6px;
+                padding: 5px 0;
+                width: 100%;
+            }
+
+            .nav-btn {
+                padding: 8px 10px;
+                font-size: 0.78rem;
+                border-radius: 20px;
+                box-shadow: 0 3px 0 var(--cinza);
+                /* Using slate grey instead of hardcoded hex */
+                flex: 1;
+                text-align: center;
+                white-space: nowrap;
+            }
+
+            .nav-btn:active {
+                transform: translateY(1.5px);
+                box-shadow: 0 1.5px 0 var(--cinza);
+                /* Using slate grey instead of hardcoded hex */
+            }
+
+            .nav-btn.active {
+                box-shadow: 0 3px 0 #3baba2;
+                /* Darker turquoise matching the official palette */
             }
         }
     </style>
@@ -260,7 +370,9 @@
         <div class="progress-container">
             <div id="progress-bar"></div>
         </div>
-        <p style="margin-top: 5px; font-size: 0.9rem;">Empatia: <span id="points">0</span>/4</p>
+        <p style="margin-top: 5px; font-size: 0.95rem; font-weight: bold; color: var(--text-dark);">
+            Empatia: <span id="points">0</span>/4 <span style="color: var(--amarelo-sol); font-size: 1.1rem; vertical-align: middle;">⭐</span>
+        </p>
     </div>
 
     <div id="game-container">
@@ -290,8 +402,22 @@
                 <button id="btn-indiferente" class="choice-btn">Opção Indiferente</button>
             </div>
             <div id="feedback-msg"></div>
-            <button id="btn-close"
-                style="margin-top: 20px; display: none; padding: 12px 25px; border-radius: 25px; border: none; background: var(--turquesa); color: white; cursor: pointer; font-weight: bold;">Continuar</button>
+            <button id="btn-close">Continuar</button>
+        </div>
+    </div>
+
+    <!-- Modal de Sucesso Final -->
+    <div id="final-modal-overlay">
+        <div class="modal" style="border-color: var(--turquesa);">
+            <h2 style="color: var(--turquesa); font-size: 1.8rem; margin-bottom: 15px;"> Missão Cumprida!</h2>
+            <p style="font-size: 1.05rem; margin-bottom: 20px; line-height: 1.6; color: var(--text-dark);">
+                Incrível! Você completou sua missão de empatia e transformou toda a escola em um lugar mais acolhedor,
+                colorido e feliz!
+            </p>
+            <button id="btn-restart" class="choice-btn"
+                style="width: 100%; border-color: var(--coral); background-color: var(--off-white); font-weight: bold; color: var(--text-dark); transition: all 0.2s;">
+                Jogar Novamente
+            </button>
         </div>
     </div>
 
@@ -302,7 +428,7 @@
          */
         const gameData = {
             patio: {
-                name: "Sr. Jorge (Limpeza)",
+                name: "Sr. Jorge",
                 location: "Pátio da Escola",
                 // CENÁRIO:
                 bg: "imgs/patio.png",
@@ -316,7 +442,7 @@
                 consequence: "Obrigado por me notar! Sinto-me muito mais motivado agora para deixar tudo brilhando."
             },
             cantina: {
-                name: "Pedro (Colega)",
+                name: "Pedro",
                 location: "Cantina",
                 // CENÁRIO:
                 bg: "imgs/cantina.png",
@@ -330,7 +456,7 @@
                 consequence: "Valeu mesmo por dividir seu lanche! Você salvou o meu dia!"
             },
             biblioteca: {
-                name: "Léo (Inclusão)",
+                name: "Léo",
                 location: "Biblioteca",
                 // CENÁRIO:
                 bg: "imgs/biblioteca.png",
@@ -344,7 +470,7 @@
                 consequence: "Foi muito legal conversar com você! Podemos conversar mais sobre livros depois."
             },
             secretaria: {
-                name: "Sr. Arnaldo (Secretário)",
+                name: "Sr. Arnaldo",
                 location: "Secretaria",
                 // CENÁRIO:
                 bg: "imgs/secretaria.png",
@@ -440,8 +566,9 @@
 
             if (points === 4) {
                 setTimeout(() => {
-                    alert("Incrível! Você completou sua missão e transformou toda a escola!");
-                }, 500);
+                    modal.style.display = 'none';
+                    document.getElementById('final-modal-overlay').style.display = 'flex';
+                }, 1000);
             }
         };
 
@@ -452,6 +579,15 @@
         };
 
         btnClose.onclick = () => modal.style.display = 'none';
+
+        document.getElementById('btn-restart').onclick = () => {
+            points = 0;
+            pointsDisplay.innerText = points;
+            progressBar.style.width = "0%";
+            solved = { patio: false, cantina: false, biblioteca: false, secretaria: false };
+            document.getElementById('final-modal-overlay').style.display = 'none';
+            changeLocation('patio');
+        };
 
         window.onload = () => changeLocation('patio');
 
